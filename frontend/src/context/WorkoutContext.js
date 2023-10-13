@@ -12,6 +12,18 @@ export const workoutsReducer = (state, action) => {
       return {
         workouts: [action.payload, ...state.workouts]
       }
+    case 'UPDATE_WORKOUT':
+      let indiv;
+      for(indiv in state.workouts) {
+        if(state.workouts[indiv]._id === action.payload._id) {
+          state.workouts[indiv].title = action.payload.title;
+          state.workouts[indiv].reps = action.payload.reps
+          state.workouts[indiv].load = action.payload.load
+        }
+      }
+      return {
+        workouts: state.workouts
+      }
     case 'DELETE_WORKOUT':
       return {
         workouts: state.workouts.filter((w) => w._id !== action.payload._id)

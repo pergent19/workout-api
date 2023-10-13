@@ -19,7 +19,7 @@ const Navbar = () => {
         <nav>
           {user && (
             <div>
-              <span>{user.email}</span>
+              <Link to={`/profile/${user._id}`}><span>{user.email}</span></Link>
               <button onClick={handleClick}>Log out</button>
             </div>
           )}

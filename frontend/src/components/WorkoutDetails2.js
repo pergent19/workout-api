@@ -5,13 +5,31 @@ import { Link } from 'react-router-dom'
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const WorkoutDetails = ({ workout }) => {
-  const { dispatch } = useWorkoutsContext()
+const WorkoutDetails2 = ({ workout, onDeleteHandler }) => {
+//   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
 
-  const handleClick = async () => {
+//   const handleClick = async () => {
+//     if (!user) {
+//       return
+//     }
+
+//     const response = await fetch('/api/workouts/' + workout._id, {
+//       method: 'DELETE',
+//       headers: {
+//         'Authorization': `Bearer ${user.token}`
+//       }
+//     })
+//     const json = await response.json()
+
+//     if (response.ok) {
+//       //dispatch({type: 'DELETE_WORKOUT', payload: json})
+//     }
+//   }
+
+const handleClick = async () => {
     if (!user) {
-      return
+              return
     }
 
     const response = await fetch('/api/workouts/' + workout._id, {
@@ -20,12 +38,14 @@ const WorkoutDetails = ({ workout }) => {
         'Authorization': `Bearer ${user.token}`
       }
     })
-    const json = await response.json()
 
+    const json = await response.json()
+    
     if (response.ok) {
-      dispatch({type: 'DELETE_WORKOUT', payload: json})
+        onDeleteHandler(json._id)
     }
-  }
+
+}
 
   return (
     <div className="workout-details">
@@ -39,4 +59,4 @@ const WorkoutDetails = ({ workout }) => {
   )
 }
 
-export default WorkoutDetails
+export default WorkoutDetails2

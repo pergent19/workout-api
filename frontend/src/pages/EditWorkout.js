@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react"
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useParams } from "react-router-dom"
+import { useWorkoutsContext } from "../hooks/useWorkoutsContext" //1
+import Modal from "../components/Modal"
 
 const EditWorkout = () => {
+    const { dispatch } = useWorkoutsContext() //2
     const {user} = useAuthContext()
     const [updatedWorkout, setUpdatedWorkout] = useState([])
-    // const [formData, setFormData] = useState(updatedWorkout)
-    // const [editWorkout, setEditWorkout] = useState({
-    //     title: updatedWorkout.title,
-    //     load: updatedWorkout.load,
-    //     reps: updatedWorkout.reps
-    //   });
-
     let { id } = useParams()
-  
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [content, setContent] = useState('')
+    const [icon, setIcon] = useState('');
+
     useEffect(() => {
       const fetchWorkouts = async () => {
+        
         const response = await fetch(`/api/workouts/${id}`, {
           headers: {'Authorization': `Bearer ${user.token}`},
         })
         const json = await response.json()
-  
+        //console.log(json)
         if (response.ok) {
             setUpdatedWorkout(json);
         }
@@ -31,6 +31,21 @@ const EditWorkout = () => {
       }
       
     }, [id, user])
+
+    const openModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      
+      if(icon === 'success-icon') {
+        window.location.href = `/`;
+        setIsModalOpen(false);
+      } else {
+        setIsModalOpen(false);
+      }
+      
+    };
 
 
     const handleOnChange = (e) => {
@@ -46,40 +61,25 @@ const EditWorkout = () => {
 
         const requestOptions = {
             method: 'PUT',
-            headers: { 'Authorization': `Bearer ${user.token}`, },
-            body:  {
-              title: "Boss Raul",
-              load: 1,
-              reps: 1
-              }
+            headers: { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json', },
+            body:  JSON.stringify(updatedWorkout)
           };
-
 
         const response = await fetch(`/api/workouts/${id}`, requestOptions);
         const data = await response.json();
-        console.log(data)
 
-        
-            // this.setState({ postId: data.id });
 
-        
-        // return
-        // try {
-            
-        //     const response = await fetch(`/api/workouts/${id}`, { 
-        //         method: "PUT",
-        //         headers: {'Authorization': `Bearer ${user.token}`},
-        //         body: JSON.stringify(updateWorkout),
-        //     });
-            
-        //     const data = await response.json();
-        //     console.log(data)
-        //     // setUpdatedWorkout(updatedWorkout.map((workout) => (workout._id === id ? response.data : workout)));
-        //     // setEditTodoId(null);
-        // } catch (error) {
-        // console.error('Error updating todo:', error);
-        // }
-
+        if(response.ok) {
+          setIcon('success-icon')
+          setContent(`Success! Your action was completed for ${data.title}`)
+          openModal();
+          dispatch({type: 'UPDATE_WORKOUT', payload: data}) //3
+        } else {
+          console.log(data)
+          setIcon('unsuccess-icon')
+          setContent(`${data.error} - ${data.emptyFields} is empty `)
+          openModal()
+        }
     }
 
 
@@ -108,12 +108,11 @@ const EditWorkout = () => {
         onChange={handleOnChange}
         value={updatedWorkout.reps || 0} 
       />
-    <button className="todo-button">
+    <button className="button-update">
         Edit
     </button>
 
-      {/* <button disabled={isLoading}>Log in</button> */}
-      {/* {error && <div className="error">{error}</div>} */}
+    <Modal isOpen={isModalOpen} closeModal={closeModal} content={content} icon={icon} />
     </form>
   )
 }

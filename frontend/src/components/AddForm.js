@@ -2,8 +2,7 @@ import { useState } from "react"
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
 import { useAuthContext } from '../hooks/useAuthContext'
 
-const WorkoutForm = () => {
-  const { dispatch } = useWorkoutsContext()
+const AddForm = (props) => {
   const { user } = useAuthContext()
 
   const [title, setTitle] = useState('')
@@ -43,7 +42,7 @@ const WorkoutForm = () => {
       setReps('')
       setError(null)
       setEmptyFields([])
-      dispatch({type: 'CREATE_WORKOUT', payload: json})
+      props.onAddHandler(json)
     }
   }
 
@@ -88,4 +87,4 @@ const WorkoutForm = () => {
   )
 }
 
-export default WorkoutForm
+export default AddForm
